@@ -18,6 +18,7 @@ from rospy.numpy_msg import numpy_msg
 from sensor_msgs.msg import JointState,Imu
 from std_msgs.msg import Float64
 from nav_msgs.msg import Odometry
+from gazebo_msgs.msg import LinkStates
 # from robot_class import ROBOT
 import time
 ########################################################## defining publishers ##########################################################
@@ -38,6 +39,8 @@ rospy.init_node('legs', anonymous=True)
 
 ###################################################### defining variables ######################################################
 
+obs = np.zeros(45)
+orientation_com = [0,0,0]
 tpre = rospy.get_time()
 q_rbdl = np.zeros(12)
 qdot_rbdl = np.zeros(12)
@@ -66,7 +69,7 @@ def pubish(effort):
     FR_calf.publish(effort[5])
     
 
-def ros_to_rbdl(q,qdot):
+def ros_to_rbdl(q,qdot,action):
     global q_rbdl,qdot_rbdl
     """
     This function corrects the sequence of q and adot 
@@ -112,66 +115,98 @@ q_d = np.zeros(12)
 qdot_d = np.zeros(12)
 kpp = 1
 count = 30
+base_pos = [0,0,0]
+base_vel = [0,0,0]
+pre_base_pos = [0,0,0]
+t_pre = time.time()
 def callback(data):
-    global kp,kd,tau,q_d, qdot_d, kpp,count
-  
+    global kp,kd,tau,q_d, qdot_d, kpp,count,obs
     ################################################ give ros data to rbdl ######################################
     q = data.position
-    q = np.asarray(q)
+    
     qdot = data.velocity
+    pre_action = data.effort
     qdot = np.asarray(qdot)
-    q_rbdl,qdot_rbdl = ros_to_rbdl(q,qdot)
+    q = np.asarray(q)
+    pre_action = np.asarray(pre_action)
 
-
-    error = q_d - q_rbdl
-    error_dot = qdot_d - qdot_rbdl
-    if kpp<21:
-        if count>0:
-            kp = kpp*np.identity(12)
-            count = count-1
-        else:
-            kpp = kpp+1
-            count = 30
-    else:
-        kp = kpp*np.identity(12)
-    print(kpp)
-    tau_pid = np.dot(error, kp) + np.dot(error_dot, kd)
-    pubish(tau_pid)
-    t_vec.appen(time.time())
-    # print(tau_pid)
+    obs[0:12] = q_rbdl
+    obs[12:24] = qdot_rbdl
+    obs[24:36] = pre_action
+    # obs.append(q_rbdl)
+    # obs.append(qdot_rbdl)
+    # obs.append(pre_action)
+    # print(len(obs))
+    
     
 
-def odom_data(data):
-    global pose_com
-    # print("odom data ======================================")
-    pose_com = np.zeros(3)
-    pose_com[0] = data.pose.pose.position.x
-    pose_com[1] = data.pose.pose.position.y
-    pose_com[2] = data.pose.pose.position.z
-    # print(pose_com)
+    # error = q_d - q_rbdl
+    # error_dot = qdot_d - qdot_rbdl
+    # if kpp<21:
+    #     if count>0:
+    #         kp = kpp*np.identity(12)
+    #         count = count-1
+    #     else:
+    #         kpp = kpp+1
+    #         count = 30
+    # else:
+    #     kp = kpp*np.identity(12)
+    # print(kpp)
+    # tau_pid = np.dot(error, kp) + np.dot(error_dot, kd)
+    # pubish(tau_pid)
+
+    # print(f"tau_pid = {tau_pid}")
+    # obs.append(tau_pid)
+    
+
+# def odom_data(data):
+#     global pose_com
+#     # print("odom data ======================================")
+#     pose_com = np.zeros(3)
+#     pose_com[0] = data.pose.pose.position.x
+#     pose_com[1] = data.pose.pose.position.y
+#     pose_com[2] = data.pose.pose.position.z
+#     print(f"pose_com = {pose_com}")
+
 
 def imu_data(data):
-    global orientation_com
+    global orientation_com,t_pre
     orientation_com[0] = data.orientation.x
     orientation_com[1] = data.orientation.y
     orientation_com[2] = data.orientation.z
-    # print(orientation_com)
-    # print("imu data +++++++++++++++++++++++++++++++++++++++")
 
     # print(data)
+def base_state(data):
+    global base_pos, base_vel,t_pre,obs
+    base_pos[0] = data.pose[1].position.x
+    base_pos[1] = data.pose[1].position.y
+    base_pos[2] = data.pose[1].position.z
+    dt =  time.time()-t_pre
+    base_vel[0] = (base_pos[1]-pre_base_pos[0])/dt
+    base_vel[1] = (base_pos[1]-pre_base_pos[1])/dt
+    base_vel[2] = (base_pos[1]-pre_base_pos[2])/dt
 
+    pre_base_pos[0] = data.pose[1].position.x
+    pre_base_pos[1] = data.pose[1].position.y
+    pre_base_pos[2] = data.pose[1].position.z
+    obs[36:39] = base_pos
+    obs[39:42] = base_vel
+    obs[42:45] = [0,0,-9.8]
+    t_pre = time.time()
+    print(obs) 
+    # print(data.pose[1].position.x)
+    # print("---")
         
 
 
 def main():
     # rospy.Subscriber("/odom", Odometry, odom_data)
-    # rospy.Subscriber("/imu/data", Imu, imu_data)
+    rospy.Subscriber("/imu", Imu, imu_data)
+    rospy.Subscriber("/gazebo/link_states", LinkStates, base_state)
+    
     # rospy.init_node("Node")
     rospy.Subscriber("/legs/joint_states", JointState, callback)
     rospy.spin()
-    if rospy.is_shutdown():
-        plt.figure()
-        plt.polot(t_vec,error)
 
 
 
