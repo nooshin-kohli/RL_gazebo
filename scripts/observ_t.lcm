@@ -1,0 +1,13 @@
+package obslcm;
+
+struct observ_t
+{
+    double base_lin_vel[3];
+    double base_ang_vel[3];
+    double gravity[3];
+    double commands[3];
+    double dof_pos[12];
+    double dof_vel[12];
+    double action[12];
+    double quaternion[4];
+}

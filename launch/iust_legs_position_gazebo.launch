@@ -1,0 +1,48 @@
+<launch>
+    <arg name="world_init_x"       default="0.0" />
+    <arg name="world_init_y"       default="0.0" />
+    <arg name="world_init_z"       default="0.42" />
+    <arg name="world_init_heading" default="0.0" />
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="paused" default="false"/>
+        <arg name="use_sim_time" default="true"/>
+        <arg name="gui" default="true"/>
+        <arg name="headless" default="false"/>
+        <arg name="debug" default="false"/>
+        <arg name="verbose" default="true"/>
+    </include>
+
+    <rosparam file="$(find legs)/config/position_control.yaml" command="load"/>
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/legs"
+          args="--namespace=/legs
+            joint_states_controller
+            FL_hip_joint_position_controller
+            FL_thigh_joint_position_controller
+            FL_calf_joint_position_controller
+            FR_hip_joint_position_controller
+            FR_thigh_joint_position_controller
+            FR_calf_joint_position_controller
+            RL_hip_joint_position_controller
+            RL_thigh_joint_position_controller
+            RL_calf_joint_position_controller
+            RR_hip_joint_position_controller
+            RR_thigh_joint_position_controller
+            RR_calf_joint_position_controller
+            ">
+        </node>
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+        <remap from="/joint_states" to="/legs/joint_states"/>
+    </node>
+
+    <param name="robot_description" textfile="$(find legs)/urdf/iust-a1.urdf"/>
+
+    <node name="robot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
+          args="-urdf -param robot_description -model legs -x $(arg world_init_x) -y $(arg world_init_y) -z $(arg world_init_z) -Y $(arg world_init_heading)" />
+    
+
+   <!-- <node name="legs_home_pos" pkg="legs" type="legs_position_homing.py" output="screen"></node> -->
+
+
+
+</launch>

@@ -58,8 +58,8 @@
   <gazebo reference="trunk">
     <mu1>0.9</mu1>
     <mu2>0.9</mu2>
-    <kp value="1000000.0"/>
-    <kd value="1.0"/>
+    <!-- <kp value="1000000.0"/>
+    <kd value="1.0"/> -->
   </gazebo>
 
 
@@ -871,4 +871,3 @@
     </actuator>
   </transmission>
 </robot>
-

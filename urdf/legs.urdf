@@ -329,8 +329,21 @@
         <parent link="base_link"/>
         <child link="trunk"/>
     </joint> -->
-  <link name="trunk"/>
-  <link name="trunk_interia">
+  <link name="base">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.3 0.2 0.093"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="floating_base" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="base"/>
+    <child link="trunk"/>
+  </joint>
+
+  <link name="trunk">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -352,17 +365,17 @@
       <inertia ixx="0.011253" ixy="0" ixz="0.0" iyy="0.036203" iyz="-0.0" izz="0.042673"/>
     </inertial>
   </link>
-  <joint name="trunk_to_trunk_interia" type="fixed">
+  <!-- <joint name="trunk_to_trunk_interia" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="trunk"/>
     <child link="trunk_interia"/>
-  </joint>
+  </joint> -->
 
 
   <!-- //////////////////////hip//////////////////// -->
   <joint name="RL_hip_joint" type="revolute">
     <!-- <joint name="${name}_hip_joint" type="continuous"> -->
-    <origin rpy="0 0 0" xyz="-0.1305 0.05 0"/>
+    <origin rpy="0 0 0" xyz="-0.130 0.05 0"/>
     <parent link="trunk"/>
     <child link="RL_hip"/>
     <axis xyz="1 0 0"/>
@@ -405,7 +418,7 @@
   <!-- //////////////////////thigh//////////////////// -->
   <joint name="RL_thigh_joint" type="revolute">
     <!-- <joint name="${name}_thigh_joint" type="continuous"> -->
-    <origin rpy="0 0 0" xyz="0 0.077476 0"/>
+    <origin rpy="0 0 0" xyz="-0.06 0.015 0"/>
     <parent link="RL_hip"/>
     <child link="RL_thigh"/>
     <axis xyz="0 1 0"/>
@@ -443,7 +456,7 @@
   <!-- //////////////////////calf//////////////////// -->
   <joint name="RL_calf_joint" type="revolute">
     <!-- <joint name="${name}_calf_joint" type="continuous"> -->
-    <origin rpy="0 0 0" xyz="0 0 -0.2115"/>
+    <origin rpy="0 -0.98 0" xyz="0 0.07125 -0.21183"/>
     <parent link="RL_thigh"/>
     <child link="RL_calf"/>
     <axis xyz="0 1 0"/>
@@ -474,7 +487,7 @@
   </link>
   <!-- //////////////////////foot//////////////////// -->
   <joint name="RL_foot_fixed" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 -0.23039"/>
+    <origin rpy="0 0 0" xyz="0 0 -0.240"/>
     <parent link="RL_calf"/>
     <child link="RL_foot"/>
   </joint>
@@ -575,7 +588,7 @@
   <!-- //////////////////////thigh//////////////////// -->
   <joint name="FL_thigh_joint" type="revolute">
     <!-- <joint name="${name}_thigh_joint" type="continuous"> -->
-    <origin rpy="0 0 0" xyz="0 0.077476 0"/>
+    <origin rpy="0 0 0" xyz="0.06 0.015 0"/>
     <parent link="FL_hip"/>
     <child link="FL_thigh"/>
     <axis xyz="0 1 0"/>
@@ -613,7 +626,7 @@
   <!-- //////////////////////calf//////////////////// -->
   <joint name="FL_calf_joint" type="revolute">
     <!-- <joint name="${name}_calf_joint" type="continuous"> -->
-    <origin rpy="0 0 0" xyz="0 0 -0.2115"/>
+    <origin rpy="0 -0.98 0" xyz="0 0.07125 -0.21183"/>
     <parent link="FL_thigh"/>
     <child link="FL_calf"/>
     <axis xyz="0 1 0"/>
@@ -644,7 +657,7 @@
   </link>
   <!-- //////////////////////foot//////////////////// -->
   <joint name="FL_foot_fixed" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 -0.23039"/>
+    <origin rpy="0 0 0" xyz="0 0 -0.240"/>
     <parent link="FL_calf"/>
     <child link="FL_foot"/>
   </joint>
@@ -745,7 +758,7 @@
   <!-- //////////////////////thigh//////////////////// -->
   <joint name="RR_thigh_joint" type="revolute">
     <!-- <joint name="${name}_thigh_joint" type="continuous"> -->
-    <origin rpy="0 0 0" xyz="0 -0.077476 0"/>
+    <origin rpy="0 0 0" xyz="-0.06 -0.015 0"/>
     <parent link="RR_hip"/>
     <child link="RR_thigh"/>
     <axis xyz="0 1 0"/>
@@ -777,7 +790,7 @@
   <!-- //////////////////////calf//////////////////// -->
   <joint name="RR_calf_joint" type="revolute">
     <!-- <joint name="${name}_calf_joint" type="continuous"> -->
-    <origin rpy="0 0 0" xyz="0 0 -0.2115"/>
+    <origin rpy="0 -0.98 0" xyz="0 -0.07125 -0.21183"/>
     <parent link="RR_thigh"/>
     <child link="RR_calf"/>
     <axis xyz="0 1 0"/>
@@ -808,7 +821,7 @@
   </link>
   <!-- //////////////////////foot//////////////////// -->
   <joint name="RR_foot_fixed" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 -0.23039"/>
+    <origin rpy="0 0 0" xyz="0 0 -0.240"/>
     <parent link="RR_calf"/>
     <child link="RR_foot"/>
   </joint>
@@ -909,7 +922,7 @@
   <!-- //////////////////////thigh//////////////////// -->
   <joint name="FR_thigh_joint" type="revolute">
     <!-- <joint name="${name}_thigh_joint" type="continuous"> -->
-    <origin rpy="0 0 0" xyz="0 -0.077476 0"/>
+    <origin rpy="0 0 0" xyz="0.06 -0.015 0"/>
     <parent link="FR_hip"/>
     <child link="FR_thigh"/>
     <axis xyz="0 1 0"/>
@@ -947,7 +960,7 @@
   <!-- //////////////////////calf//////////////////// -->
   <joint name="FR_calf_joint" type="revolute">
     <!-- <joint name="${name}_calf_joint" type="continuous"> -->
-    <origin rpy="0 0 0" xyz="0 0 -0.2115"/>
+    <origin rpy="0 -0.98 0" xyz="0 -0.07125 -0.21183"/>
     <parent link="FR_thigh"/>
     <child link="FR_calf"/>
     <axis xyz="0 1 0"/>
@@ -978,7 +991,7 @@
   </link>
   <!-- //////////////////////foot//////////////////// -->
   <joint name="FR_foot_fixed" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 -0.23039"/>
+    <origin rpy="0 0 0" xyz="0 0 -0.240"/>
     <parent link="FR_calf"/>
     <child link="FR_foot"/>
   </joint>

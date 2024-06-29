@@ -41,7 +41,8 @@
           args="-urdf -param robot_description -model legs -x $(arg world_init_x) -y $(arg world_init_y) -z $(arg world_init_z) -Y $(arg world_init_heading)" />
     
 
-   <!-- <node name="command_legs" pkg="legs" type="home_leg.py" output="screen"></node> -->
+   <node name="linkstate_node" pkg="legs" type="noderate.py" output="screen"></node>
+   <node name="jointstate_node" pkg="legs" type="node_rate_two.py" output="screen"></node>
 
 
 
